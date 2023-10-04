@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "esnext" /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017','ES2018' or 'ESNEXT'. */,
+    "module": "commonjs" /* Specify module code generation: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', or 'ESNext'. */,
+    "lib": [
+      "dom",
+      "es6",
+      "es2016",
+      "esnext",
+      "esnext.asynciterable"
+    ] /* Specify library files to be included in the compilation. */,
+    "allowJs": true,
+    "outDir": "./dist",
+    "strict": true /* Enable all strict type-checking options. */,
+    "noImplicitAny": true /* Raise error on expressions and declarations with an implied 'any' type. */,
+    "strictNullChecks": true,
+    "strictBindCallApply": true,
+    "noImplicitThis": true,
+    "moduleResolution": "node" /* Specify module resolution strategy: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */,
+    "baseUrl": "src" /* Base directory to resolve non-absolute module names. */,
+    "paths": {},
+    "types": ["node"],
+    "esModuleInterop": true,
+    "experimentalDecorators": true /* Enables experimental support for ES7 decorators. */,
+    "emitDecoratorMetadata": true /* Enables experimental support for emitting type metadata for decorators. */
+  },
+  "include": ["src/**/*"],
+  "exclude": ["test"]
+}

@@ -1,0 +1,48 @@
+{
+  "name": "summarysender",
+  "version": "0.0.1",
+  "description": "",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "nodemon"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/nodemailer": "^6.4.11",
+    "@typescript-eslint/eslint-plugin": "^6.7.4",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "eslint": "^8.50.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eta": "^3.1.1",
+    "express": "^4.18.2",
+    "handlebars": "^4.7.8",
+    "inversify": "^6.0.1",
+    "inversify-express-utils": "^6.4.3",
+    "js-yaml": "^4.1.0",
+    "lodash": "^4.17.21",
+    "morgan": "^1.10.0",
+    "nodemailer": "^6.9.5",
+    "nodemailer-mailgun-transport": "^2.1.5",
+    "nodemon": "^3.0.1",
+    "pdf-creator-node": "^2.3.5",
+    "reflect-metadata": "^0.1.13",
+    "swagger-ui-express": "^5.0.0",
+    "ts-node": "^10.9.1",
+    "winston": "^3.10.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.14",
+    "@types/express": "^4.17.18",
+    "@types/inversify": "^2.0.33",
+    "@types/js-yaml": "^4.0.6",
+    "@types/lodash": "^4.14.199",
+    "@types/morgan": "^1.9.6",
+    "@types/nodemailer-mailgun-transport": "^1.4.4",
+    "@types/swagger-ui-express": "^4.1.4",
+    "typescript": "^5.2.2"
+  }
+}
