@@ -1,6 +1,10 @@
 export const TYPES = {
+  WorkerService: Symbol("WorkerService"),
   MailerService: Symbol("MailerService"),
-  WinstonLogger: Symbol("WinstonLogger")
+  WinstonLogger: Symbol("WinstonLogger"),
+  UserInteractionsRepository: Symbol("UserInteractionsRepository"),
+  MongoDbService: Symbol("MongoDbService"),
+  ReporterService: Symbol("ReporterService")
 };
 
 const EmailProviders = [
@@ -39,3 +43,7 @@ export const MailServiceRegex = new RegExp(
 );
 // const isMatch = MailServiceRegex.test(testString);
 // create some checks on this list while reading config file
+
+export const getReportName = (userIP: string) =>
+  `Report-for-user-with-ip-${userIP}.pdf`;
+export const ReportContentType = "application/pdf";

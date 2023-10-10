@@ -3,5 +3,8 @@
   "ext": "ts",
   "ignore": ["*.test.ts"],
   "delay": "3",
+  "env": {
+    "NODE_OPTIONS": "--experimental-worker"
+  },
   "exec": "ts-node src/index.ts"
 }

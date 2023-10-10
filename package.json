@@ -10,7 +10,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/node": "^20.8.4",
     "@types/nodemailer": "^6.4.11",
+    "@types/uuid": "^9.0.4",
     "@typescript-eslint/eslint-plugin": "^6.7.4",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
@@ -24,6 +26,7 @@
     "inversify-express-utils": "^6.4.3",
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
+    "mongoose": "^7.5.3",
     "morgan": "^1.10.0",
     "nodemailer": "^6.9.5",
     "nodemailer-mailgun-transport": "^2.1.5",
@@ -32,6 +35,7 @@
     "reflect-metadata": "^0.1.13",
     "swagger-ui-express": "^5.0.0",
     "ts-node": "^10.9.1",
+    "uuid": "^9.0.1",
     "winston": "^3.10.0"
   },
   "devDependencies": {

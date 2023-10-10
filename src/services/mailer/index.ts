@@ -1,11 +1,8 @@
 import * as nodemailer from "nodemailer";
-import mailgunTransport from "nodemailer-mailgun-transport";
-// import handlebars from "handlebars";
-import fs from "fs";
 import path from "path";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../constants";
-import Mail from "nodemailer/lib/mailer";
+import Mail, { Attachment } from "nodemailer/lib/mailer";
 import { Logger } from "winston";
 import { Eta } from "eta";
 
@@ -14,7 +11,8 @@ export interface IMailerService {
   sendMail(
     to: string,
     subject: string,
-    html: string
+    html: string,
+    attachments?: Attachment[]
   ): Promise<nodemailer.SentMessageInfo>;
 }
 
@@ -35,14 +33,23 @@ export class MailerService implements IMailerService {
 
     if (process.env.MAIL_TRANSPORT) {
       if (process.env.MAIL_TRANSPORT?.toUpperCase?.() === "MAILGUN") {
-        this.transport = nodemailer.createTransport(
-          mailgunTransport({
-            auth: {
-              api_key: process.env.MAILGUN_API_KEY!,
-              domain: process.env.MAILGUN_DOMAIN!
-            }
-          })
-        );
+        this.transport = nodemailer.createTransport({
+          host: "smtp.mailgun.org",
+          port: 587, // Use 587 for TLS
+          secure: false, // true for 465, false for other ports
+          auth: {
+            user: process.env.MAILGUN_USER,
+            pass: process.env.MAILGUN_PASSWORD
+          }
+        });
+        // this.transport = nodemailer.createTransport(
+        //   mailgunTransport({
+        //     auth: {
+        //       api_key: process.env.MAILGUN_API_KEY!,
+        //       domain: process.env.MAILGUN_DOMAIN!
+        //     }
+        //   })
+        // );
       } else {
         this.transport = nodemailer.createTransport({
           service: process.env.MAIL_TRANSPORT,
@@ -80,19 +87,22 @@ export class MailerService implements IMailerService {
   public async sendMail(
     to: string,
     subject: string,
-    html: string
+    html: string,
+    attachments?: Attachment[]
   ): Promise<nodemailer.SentMessageInfo> {
     try {
       const mailOptions = <Mail.Options>{
         from: this.fromAddress,
         to,
         subject,
-        html
+        html,
+        attachments
       };
 
+      // return "";
       return await this.transport.sendMail(mailOptions);
     } catch (error) {
-      this.logger.error(error);
+      console.log(error);
       throw error;
     }
   }

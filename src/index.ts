@@ -21,7 +21,14 @@ import { Format, TransformableInfo } from "logform";
 import { TYPES } from "./constants";
 import { IMailerService, MailerService } from "./services/mailer";
 import * as yaml from "js-yaml";
+import { MongoDbService, IMongoDbService } from "./services/mongodb";
 import "./controllers/health";
+import "./controllers/reports";
+import {
+  IUserInteractionsRepository,
+  UserInteractionsRepository
+} from "./repositories/user-interactions";
+import { IReporterService, ReporterService } from "./services/reporter";
 
 dotenv.config({ path: "./.env" });
 
@@ -52,12 +59,35 @@ const logger: Logger = createLogger(<LoggerOptions>{
     .bind<IMailerService>(TYPES.MailerService)
     .to(MailerService)
     .inSingletonScope();
+  container
+    .bind<IUserInteractionsRepository>(TYPES.UserInteractionsRepository)
+    .to(UserInteractionsRepository)
+    .inSingletonScope();
+  container
+    .bind<IReporterService>(TYPES.ReporterService)
+    .to(ReporterService)
+    .inSingletonScope();
+  container
+    .bind<IMongoDbService>(TYPES.MongoDbService)
+    .to(MongoDbService)
+    .inSingletonScope();
+
+  const mongodb = container.get<IMongoDbService>(TYPES.MongoDbService);
+  await mongodb.connectDb();
+
+  // const workerService = container.get<WorkerService>(TYPES.WorkerService);
+  // workerService.startWorker();
 
   const server = new InversifyExpressServer(container);
 
   server.setConfig(async (app) => {
     app.use(cors());
-
+    app.use(
+      bodyParser.urlencoded({
+        extended: true
+      })
+    );
+    app.use(bodyParser.json());
     const swaggerContent = await new Promise<string>((resolve, reject) => {
       fs.readFile(
         path.resolve(process.cwd(), "src/swagger/swagger.yaml"),
@@ -73,12 +103,6 @@ const logger: Logger = createLogger(<LoggerOptions>{
 
     const swaggerDoc = yaml.load(swaggerContent) as JsonObject;
     app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDoc));
-    app.use(
-      bodyParser.urlencoded({
-        extended: true
-      })
-    );
-    app.use(bodyParser.json());
     app.use(morgan("dev"));
   });
 
