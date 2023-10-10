@@ -41,24 +41,20 @@ export class ReporterService implements IReporterService {
       callingServiceName
     );
 
-    const res: any = await new Promise((res, rej) => {
+    const res: any = await new Promise((resolve, reject) => {
       const worker = new Worker("./src/services/reporter/worker.js");
 
       worker.on("message", (message) => {
-        res(message);
-        // Handle the message received from the worker
-        // For example, call a method in another service or store the result
+        resolve(message);
       });
       worker.on("error", (message) => {
-        console.log("error");
-        console.log(message);
-        rej();
+        this.logger.error("error");
+        this.logger.error(JSON.stringify(message));
+        reject(message);
       });
       worker.on("exit", (message) => {
-        console.log("exit");
-        console.log(message);
-        // Handle the message received from the worker
-        // For example, call a method in another service or store the result
+        this.logger.info("exit");
+        this.logger.info(JSON.stringify(message));
       });
 
       worker.postMessage({
@@ -74,14 +70,10 @@ export class ReporterService implements IReporterService {
     //   interactions
     // });
 
-    console.log("res after worker");
-    console.log(res);
-
     if (!res.filename) {
+      console.log("\n\nno filename in result after report generated\n\n");
       // ... throw  new Error()
     }
-
-    // const res: any = await pdf.create(document, options);
     return res.filename;
   }
 

@@ -5,6 +5,7 @@ import { TYPES } from "../../constants";
 import Mail, { Attachment } from "nodemailer/lib/mailer";
 import { Logger } from "winston";
 import { Eta } from "eta";
+import mailgunTransport from "nodemailer-mailgun-transport";
 
 export interface IMailerService {
   readEmailTemplate(templateName: string): Promise<string>;
@@ -42,14 +43,17 @@ export class MailerService implements IMailerService {
             pass: process.env.MAILGUN_PASSWORD
           }
         });
-        // this.transport = nodemailer.createTransport(
-        //   mailgunTransport({
-        //     auth: {
-        //       api_key: process.env.MAILGUN_API_KEY!,
-        //       domain: process.env.MAILGUN_DOMAIN!
-        //     }
-        //   })
-        // );
+      } else if (
+        process.env.MAIL_TRANSPORT?.toUpperCase?.() === "MAILGUN_API"
+      ) {
+        this.transport = nodemailer.createTransport(
+          mailgunTransport({
+            auth: {
+              api_key: process.env.MAILGUN_API_KEY!,
+              domain: process.env.MAILGUN_DOMAIN!
+            }
+          })
+        );
       } else {
         this.transport = nodemailer.createTransport({
           service: process.env.MAIL_TRANSPORT,
@@ -99,10 +103,9 @@ export class MailerService implements IMailerService {
         attachments
       };
 
-      // return "";
       return await this.transport.sendMail(mailOptions);
     } catch (error) {
-      console.log(error);
+      this.logger.error(JSON.stringify(error));
       throw error;
     }
   }

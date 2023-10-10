@@ -10,8 +10,11 @@ import {
   Logger,
   LoggerOptions
 } from "winston";
-import { Request, Response, NextFunction } from "express";
-import { InversifyExpressServer } from "inversify-express-utils";
+import { Request, Response, NextFunction, RequestHandler } from "express";
+import {
+  InversifyExpressServer,
+  BaseMiddleware
+} from "inversify-express-utils";
 import { Container } from "inversify";
 import * as bodyParser from "body-parser";
 import * as fs from "fs";
@@ -29,6 +32,7 @@ import {
   UserInteractionsRepository
 } from "./repositories/user-interactions";
 import { IReporterService, ReporterService } from "./services/reporter";
+import { TempFilesMiddleware } from "./middlewares/tempFilesMiddleware";
 
 dotenv.config({ path: "./.env" });
 
@@ -45,10 +49,7 @@ const logger: Logger = createLogger(<LoggerOptions>{
     }),
     fmt
   ),
-  transports: [
-    new transports.Console({ level: "info" })
-    // new transports.File({ filename: 'sample-app.log' }),
-  ]
+  transports: [new transports.Console({ level: "info" })]
 });
 
 (async () => {
@@ -72,11 +73,10 @@ const logger: Logger = createLogger(<LoggerOptions>{
     .to(MongoDbService)
     .inSingletonScope();
 
+  container.bind<BaseMiddleware>(TempFilesMiddleware).toSelf();
+
   const mongodb = container.get<IMongoDbService>(TYPES.MongoDbService);
   await mongodb.connectDb();
-
-  // const workerService = container.get<WorkerService>(TYPES.WorkerService);
-  // workerService.startWorker();
 
   const server = new InversifyExpressServer(container);
 

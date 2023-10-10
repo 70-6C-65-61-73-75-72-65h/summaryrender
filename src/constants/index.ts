@@ -1,4 +1,5 @@
 export const TYPES = {
+  Middleware: Symbol("Middleware"),
   WorkerService: Symbol("WorkerService"),
   MailerService: Symbol("MailerService"),
   WinstonLogger: Symbol("WinstonLogger"),

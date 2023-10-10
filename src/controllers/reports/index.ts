@@ -7,11 +7,13 @@ import {
   httpPost,
   httpPut,
   requestBody,
-  response
+  response,
+  request
 } from "inversify-express-utils";
 import { IReporterService } from "services/reporter";
 import { IUserInteractionsDTO } from "models/user-interactions";
-import { Worker, isMainThread } from "worker_threads";
+import { TempFilesMiddleware } from "../../middlewares/tempFilesMiddleware";
+import { RequestWithSettledTempFiles } from "middlewares/types";
 
 export interface IGetReportDTO extends IUserInteractionsDTO {
   to: string;
@@ -26,8 +28,9 @@ export class ReporterController {
     @inject(TYPES.MailerService) public mailerService: IMailerService
   ) {}
 
-  @httpPost("/")
+  @httpPost("/", TempFilesMiddleware)
   public async sendReport(
+    @request() req: RequestWithSettledTempFiles,
     @response() res: Response,
     @requestBody() getReportDTO: IGetReportDTO
   ) {
@@ -52,19 +55,26 @@ export class ReporterController {
         getReportDTO.callingServiceName
       );
 
-    // const mailSendResult = await this.mailerService.sendMail(
-    //   getReportDTO.to,
-    //   getReportDTO.subject,
-    //   getReportDTO.html,
-    //   [
-    //     {
-    //       contentType: ReportContentType,
-    //       filename: getReportName(getReportDTO.userIP),
-    //       path: reportResultPath
-    //     }
-    //   ]
-    // );
-    return res.send({ reportResultPath, mailSendResult: "" });
+    if (!req.tempFilesPaths) {
+      req.tempFilesPaths = [reportResultPath];
+    } else {
+      req.tempFilesPaths.push(reportResultPath);
+    }
+
+    const mailSendResult = await this.mailerService.sendMail(
+      getReportDTO.to,
+      getReportDTO.subject,
+      getReportDTO.html,
+      [
+        {
+          contentType: ReportContentType,
+          filename: getReportName(getReportDTO.userIP),
+          path: reportResultPath
+        }
+      ]
+    );
+
+    return res.send({ reportResultPath, mailSendResult });
   }
 
   @httpPut("/")
@@ -72,7 +82,6 @@ export class ReporterController {
     @response() res: Response,
     @requestBody() setReportDTO: IUserInteractionsDTO
   ) {
-    console.log(setReportDTO);
     const reportRes = await this.reporterService.setUserRequestsCount(
       setReportDTO.userIP,
       setReportDTO.callingServiceName
